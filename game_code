@@ -1,0 +1,228 @@
+###################################################################
+# University of Toronto
+
+# Faculty of Information
+
+# Bachelor of Information
+
+# INF452: Information Design Studio V: Coding
+#
+#
+#
+
+# Student Name: Gauravpreet Thind
+
+# Student Number: 1005387350
+
+#
+#
+#
+# Assignment 2, Problem 4
+# Purpose Write a program that calculates the day of the week using Zeller's
+# congruence
+# Date Created: 10/1/2024
+# Date Modified: 10/1/2024
+###################################################################
+import time
+import turtle
+import random
+
+
+# set up the game background
+background = turtle.Screen()
+background.title("Snake Game by Gaurav Thind")
+background.bgcolor("light green")
+background.setup(height=600, width=600)
+background.tracer(0)
+
+length = []
+score = 0
+high_score = 0
+delay = 0.1
+
+
+#snake
+snake = turtle.Turtle()
+snake.penup()
+snake.shape("square")
+snake.fillcolor("black")
+snake.speed(0)
+snake.goto(0, 0)
+snake.direction = "stop"
+
+# make an apple
+apple = turtle.Turtle()
+apple.speed(0)
+apple.shape("circle")
+apple.fillcolor("red")
+apple.penup()
+apple.goto(100, 100)
+
+
+# score
+score_board = turtle.Turtle()
+score_board.shape("square")
+score_board.color("white")
+score_board.penup()
+score_board.hideturtle()
+score_board.goto(0, 260)
+score_board.write("Score: High Score: ", move=False, align="center",
+                  font=("Courier", 24, "normal"))
+
+
+def move():
+    if snake.direction == "up":
+        snake.sety(snake.ycor() + 20)
+    if snake.direction == "down":
+        snake.sety(snake.ycor() - 20)
+    if snake.direction == "left":
+        snake.setx(snake.xcor() - 20)
+    if snake.direction == "right":
+        snake.setx(snake.xcor() + 20)
+
+
+def go_up():
+    if snake.direction != "down":
+        snake.direction = "up"
+
+
+def go_down():
+    if snake.direction != "up":
+        snake.direction = "down"
+
+
+def go_left():
+    if snake.direction != "right":
+        snake.direction = "left"
+
+
+def go_right():
+    if snake.direction != "left":
+        snake.direction = "right"
+
+
+background.listen()
+background.onkeypress(go_up, "w")
+background.onkeypress(go_down, "s")
+background.onkeypress(go_left, "a")
+background.onkeypress(go_right, "d")
+
+
+def game_over():
+    over = turtle.Turtle()
+    over.penup()
+    over.goto(0, 0)
+    over.write("Game Over!", move=False, align="center",
+                      font=("Courier", 30, "normal"))
+    over.hideturtle()
+    time.sleep(2)
+    over.clear()
+
+
+while True:
+    background.update()
+
+# Check for a collision with the border
+    if snake.xcor() > 290 or snake.xcor() < -290 or snake.ycor() > 290 or\
+            snake.ycor() < -290:
+        time.sleep(1)
+        snake.goto(0, 0)
+        snake.direction = "stop"
+        game_over()
+
+        # Hide the segments
+        for i in length:
+            i.goto(1000, 1000)
+
+        # Clear the segments list
+        length.clear()
+
+        # Reset the score
+        score = 0
+
+        # Reset the delay
+        delay = 0.1
+
+        score_board.clear()
+        score_board.write("Score: {}  High Score: {}".format(score,
+                                                             high_score),
+                          align="center", font=("Arial", 24, "normal"))
+        # Check for a collision with the food
+        # Move the food to a random spot
+
+    if snake.distance(apple) < 20:
+        x = random.randint(-290, 290)
+        y = random.randint(-290, 290)
+        apple.goto(x, y)
+
+        # Add a segment
+        new_segment = turtle.Turtle()
+        new_segment.speed(0)
+        new_segment.shape("square")
+        new_segment.color("blue")
+        new_segment.penup()
+        length.append(new_segment)
+
+        # Shorten the delay
+        delay -= 0.001
+
+        # Increase the score
+        score += 1
+
+        if score > high_score:
+            high_score = score
+
+        score_board.clear()
+        score_board.write("Score: {}  High Score: {}".format(score,
+                                                              high_score),
+                           align="center", font=("Arial", 24, "normal"))
+
+    # Move the end segments first in reverse order
+    for index in range(len(length)-1, 0, -1):
+        x = length[index-1].xcor()
+        y = length[index-1].ycor()
+        length[index].goto(x, y)
+
+    # Move segment 0 to where the head is
+    if len(length) > 0:
+        x = snake.xcor()
+        y = snake.ycor()
+        length[0].goto(x, y)
+
+    move()
+
+    # Check for head collision with the body segments
+    for n in length:
+        if n.distance(snake) < 20:
+            time.sleep(1)
+            snake.goto(0,0)
+            snake.direction = "stop"
+
+            # Hide the segments
+            for l in length:
+                l.goto(1000, 1000)
+
+            # Clear the segments list
+            length.clear()
+
+            # Reset the score
+            score = 0
+
+            # Reset the delay
+            delay = 0.1
+
+            # Update the score display
+            score_board.clear()
+            score_board.write("Score: {}  High Score: {}".format(score,
+                                                                 high_score),
+                              align="center", font=("Courier", 24, "normal"))
+    time.sleep(delay)
+
+
+
+
+
+
+
+
+
